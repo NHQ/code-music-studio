@@ -36,7 +36,6 @@ function computeWave () {
     }
     p.setAttribute('points', points.join(' '));
 }
-setInterval(computeWave, 500);
 
 var music = function (t) { return 0 };
 var code = document.querySelector('#code');
