@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-color: black;
+        margin: 0px;
+      }
+      #scope {
+        width: 49%;
+        height: 100%;
+        margin: 0px;
+      }
+      #code {
+        width: 50%;
+        height: 100%;
+        margin: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" id="scope">
+      <polyline stroke="red" stroke-width="4" />
+    </svg>
+    <textarea id="code">return function (t) {
+  return Math.sin(2 * Math.PI * t * 441);
+}
+</textarea>
+    <script src="bundle.js"></script>
+  </body>
+</html>
