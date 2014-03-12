@@ -5,13 +5,6 @@
         background-color: blue;
         margin: 0px;
       }
-      #scope {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        right: 50%;
-        height: 50%;
-      }
       #freqs {
         position: absolute;
         left: 0px;
@@ -32,15 +25,24 @@
         left: 0px;
         right: 50%;
         bottom: 0px;
-        height: 50px;
+        height: 30px;
+      }
+      #scope {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 50%;
+        height: 50%;
       }
     </style>
   </head>
   <body>
+    <div id="scope">
+      <div id="slider"></div>
+    </div>
     <svg xmlns="http://www.w3.org/2000/svg" id="freqs">
       <polyline stroke="red" stroke-width="4" />
     </svg>
-    <div id="slider"></div>
     <textarea id="code">return function (t) {
   return sin(441);
   function sin (x) { return Math.sin(2 * Math.PI * t * x) }

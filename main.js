@@ -1,5 +1,5 @@
 var scope = require('./lib/scope.js')();
-scope.appendTo(document.body);
+scope.appendTo('#scope');
 window.addEventListener('resize', function (ev) { scope.resize() });
 
 var baudio = require('webaudio');
