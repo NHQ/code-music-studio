@@ -1,6 +1,6 @@
-var svg = document.querySelector('svg');
-var fft = require('ndarray-fft');
-var mag = require('ndarray-complex').mag;
+var scope = require('./lib/scope.js')();
+scope.appendTo(document.body);
+
 var baudio = require('webaudio');
 var slideways = require('slideways');
 
@@ -16,26 +16,8 @@ var duration = 1 / 50;
 
 slider.on('value', function (x) {
     duration = Math.pow(10, -x);
-    computeWave();
+    scope.wave(music, 500);
 });
-
-var style = window.getComputedStyle(svg);
-var width = parseInt(style.width), height = parseInt(style.height);
-var p = svg.querySelector('polyline');
-svg.appendChild(p);
-
-function computeWave () {
-    var points = [];
-    var samples = 500;
-    for (var i = 0; i < samples; i++) {
-        var t = i / samples * duration;
-        var res = Math.max(-1, Math.min(1, music(t)));
-        var x = width * (i / samples);
-        var y = (res + 1) / 2 * (height - 200) + 100;
-        points.push(x + ',' + y);
-    }
-    p.setAttribute('points', points.join(' '));
-}
 
 var music = function (t) { return 0 };
 var code = document.querySelector('#code');
@@ -52,11 +34,15 @@ function onchange () {
         lastErr = String(err);
         return;
     }
-    if (lastSrc !== code.value) computeWave(music);
+    if (lastSrc !== code.value) scope.wave(music, 500);
     lastSrc = code.value;
 }
 
+var floats = new Float32Array(44000 / 8);
+var floatIx = 0;
 var b = baudio(function (t) {
-    return music(t);
+    var x = music(t);
+    floats[floatIx % floats.length] = x;
+    return x;
 });
 b.play();
