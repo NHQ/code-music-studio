@@ -1,5 +1,6 @@
 var scope = require('./lib/scope.js')();
 scope.appendTo(document.body);
+window.addEventListener('resize', function (ev) { scope.resize() });
 
 var baudio = require('webaudio');
 var slideways = require('slideways');
@@ -15,8 +16,7 @@ var rate = 44000;
 var duration = 1 / 50;
 
 slider.on('value', function (x) {
-    duration = Math.pow(10, -x);
-    scope.wave(music, 500);
+    scope.setDuration(Math.pow(10, -x));
 });
 
 var music = function (t) { return 0 };

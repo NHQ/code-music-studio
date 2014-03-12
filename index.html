@@ -2,7 +2,7 @@
   <head>
     <style>
       body {
-        background-color: black;
+        background-color: blue;
         margin: 0px;
       }
       #scope {
@@ -42,7 +42,8 @@
     </svg>
     <div id="slider"></div>
     <textarea id="code">return function (t) {
-  return Math.sin(2 * Math.PI * t * 441);
+  return sin(441);
+  function sin (x) { return Math.sin(2 * Math.PI * t * x) }
 }
 </textarea>
     <script src="bundle.js"></script>
