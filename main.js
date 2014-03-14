@@ -12,7 +12,6 @@ var code = document.querySelector('#code');
 observable.input(code)(function (source) {
     try { music = Function(source)() }
     catch (err) { return console.log(err) }
-    
     scope.wave(music, 500);
 });
 
