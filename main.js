@@ -4,6 +4,9 @@ var observable = require('observable');
 var scope = require('./lib/scope.js')();
 scope.appendTo('#scope');
 
+var paused = false;
+scope.on('click', function () { paused = !paused });
+
 window.addEventListener('resize', function (ev) { scope.resize() });
 
 var music = function (t) { return 0 };
@@ -17,11 +20,12 @@ observable.input(code)(function (source) {
 
 var time = 0;
 setInterval(function () {
-    scope.setTime(time);
-}, 1000);
+    if (!paused) scope.setTime(time);
+}, 50);
 
 var b = baudio(function (t) {
     time = t;
+    if (paused) return 0;
     return music(t);
 });
 b.play();
