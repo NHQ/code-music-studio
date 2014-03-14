@@ -15,5 +15,13 @@ observable.input(code)(function (source) {
     scope.wave(music, 500);
 });
 
-var b = baudio(function (t) { return music(t) });
+var time = 0;
+setInterval(function () {
+    scope.setTime(time);
+}, 1000);
+
+var b = baudio(function (t) {
+    time = t;
+    return music(t);
+});
 b.play();
