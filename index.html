@@ -4,8 +4,9 @@
       body {
         background-color: blue;
         margin: 0px;
+        overflow: hidden;
       }
-      #freqs {
+      #fscope {
         position: absolute;
         left: 0px;
         right: 50%;
@@ -27,7 +28,7 @@
         bottom: 0px;
         height: 30px;
       }
-      #scope {
+      #ascope {
         position: absolute;
         top: 0px;
         left: 0px;
@@ -37,10 +38,8 @@
     </style>
   </head>
   <body>
-    <div id="scope"></div>
-    <svg xmlns="http://www.w3.org/2000/svg" id="freqs">
-      <polyline stroke="red" stroke-width="4" />
-    </svg>
+    <div id="ascope"></div>
+    <div id="fscope"></div>
     <textarea id="code">return function (t) {
   return sin(441);
   function sin (x) { return Math.sin(2 * Math.PI * t * x) }
