@@ -13,7 +13,6 @@
     "webaudio": "~2.0.0"
   },
   "devDependencies": {
-    "tape": "~2.3.2",
     "browserify": "*"
   },
   "scripts": {
