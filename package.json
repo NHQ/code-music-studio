@@ -1,7 +1,7 @@
 {
   "name": "code-music-studio",
   "version": "0.0.0",
-  "description": "design algorithmic music",
+  "description": "design musical algorithms",
   "bin": {
     "code-music-studio": "bin/cmd.js"
   },
