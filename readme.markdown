@@ -2,6 +2,8 @@
 
 design musical algorithms
 
+[live demo at studio.substack.net](http://studio.substack.net/)
+
 ![screenshot](images/screenshot.png)
 
 # install
