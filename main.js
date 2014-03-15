@@ -2,11 +2,10 @@ var baudio = require('webaudio');
 var observable = require('observable');
 
 var music = function (t) { return 0 };
-var ascope = require('amplitude-viewer')(function (t) { return music(t) });
+var ascope = require('amplitude-viewer')();
 ascope.appendTo('#ascope');
 
 var fscope = require('frequency-viewer')();
-fscope.on('click', function () { fscope.draw(data) });
 fscope.appendTo('#fscope');
 
 var paused = false;
@@ -22,17 +21,14 @@ var code = document.querySelector('#code');
 observable.input(code)(function (source) {
     try { music = Function(source)() }
     catch (err) { return console.log(err) }
-    ascope.draw();
+    ascope.draw(music);
 });
 
 setInterval(function f () {
     if (paused) return;
     ascope.setTime(time);
-    ascope.draw();
-}, 50);
-
-setInterval(function () {
-    if (!paused) fscope.draw(data);
+    ascope.draw(music);
+    fscope.draw(data);
 }, 50);
 
 var time = 0;
