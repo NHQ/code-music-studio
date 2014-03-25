@@ -24,7 +24,7 @@ var port = parseInt(process.env.PORT) || argv.port
 ;
 var ecstatic = require('ecstatic')(__dirname + '/../static');
 
-var level = require('level-party');
+var level = require('level');
 var bytewise = require('bytewise');
 var datadir = path.join(
     process.env.DATADIR || argv.datadir,
