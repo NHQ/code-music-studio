@@ -36,7 +36,7 @@ ascope.on('click', togglePlay);
 var paused = false;
 function togglePlay () {
     paused = !paused;
-    this.textContent = paused ? 'play' : 'pause';
+    play.textContent = paused ? 'play' : 'pause';
 }
 
 window.addEventListener('resize', function (ev) {
