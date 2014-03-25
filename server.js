@@ -26,6 +26,7 @@ var datadir = path.join(
 var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 var getSong = require('./lib/song.js')(db);
 var getHistory = require('./lib/history.js')(db);
+var render = { history: require('./render/history.js') };
 
 var server = http.createServer(function (req, res) {
     var u = url.parse(req.url), m = req.method;
@@ -55,7 +56,7 @@ var server = http.createServer(function (req, res) {
             else res.end(song.code)
         });
     }
-    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history') {
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history.json') {
         getHistory(parts.slice(2))
             .pipe(through(function (row) {
                 var rec = row.value;
@@ -65,11 +66,17 @@ var server = http.createServer(function (req, res) {
             .pipe(res)
         ;
     }
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history') {
+        var first = true;
+        getHistory(parts.slice(2)).pipe(render.history()).pipe(res);
+    }
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
         var s = tr.createWriteStream('#code');
         var title = encode(parts.join('/'));
         tr.select('#save *[name=title]').setAttribute('value', title);
+        var href = encodeURIComponent(title);
+        tr.select('.history-link').setAttribute('href', '/-/history/' + href);
         readStream('index.html').pipe(tr).pipe(res);
         
         getSong(parts, params, function (err, song) {

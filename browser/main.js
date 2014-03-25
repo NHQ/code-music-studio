@@ -17,6 +17,9 @@ function onsubmit (ev) {
     if (window.history.pushState) {
         window.history.pushState({}, title, '/' + encodeURIComponent(title));
     }
+    document.querySelector('.history-link').setAttribute(
+        'href', '/-/history/' + encodeURIComponent(title)
+    );
 }
 
 var music = function (t) { return 0 };
