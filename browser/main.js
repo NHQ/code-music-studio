@@ -2,7 +2,6 @@ var baudio = require('webaudio');
 var observable = require('observable');
 var hyperquest = require('hyperquest');
 
-console.log(document.querySelector('#save'));
 document.querySelector('#save').addEventListener('submit', onsubmit);
 function onsubmit (ev) {
     ev.preventDefault();
@@ -15,6 +14,9 @@ function onsubmit (ev) {
         console.log(buf);
     });
     r.end(JSON.stringify({ title: title, code: code.value }));
+    if (window.history.pushState) {
+        window.history.pushState({}, title, '/' + encodeURIComponent(title));
+    }
 }
 
 var music = function (t) { return 0 };

@@ -7,6 +7,8 @@ var minimist = require('minimist');
 var trumpet = require('trumpet');
 var concat = require('concat-stream');
 var qs = require('querystring');
+var encode = require('ent').encode;
+var lexi = require('lexicographic-integer');
 
 var argv = minimist(process.argv.slice(2), {
     alias: { p: 'port', d: 'datadir' },
@@ -17,13 +19,16 @@ var ecstatic = require('ecstatic')(__dirname + '/static');
 
 var level = require('level');
 var bytewise = require('bytewise');
-var datadir = path.join(process.env.DATADIR || argv.datadir, 'code.db');
+var datadir = path.join(
+    process.env.DATADIR || argv.datadir,
+    'code-music-studio.db'
+);
 var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 
 function getSong (parts, params, cb) {
     var key = [ 'songs', parts ];
     if (params.time) {
-        key.push(parseInt(params.time,10));
+        key.push(lexi.pack(parseInt(params.time,10)));
         return db.get(key, function (err, song) {
             if (err) cb(err)
             else cb(null, song)
@@ -49,7 +54,7 @@ var server = http.createServer(function (req, res) {
     
     if (m === 'POST' && /\.json$/.test(u.pathname)) {
         parts[parts.length-1] = parts[parts.length-1].replace(/\.json$/, '');
-        var key = [ 'songs', parts, Date.now() ];
+        var key = [ 'songs', parts, lexi.pack(Date.now()) ];
         req.pipe(concat(function (body) {
             try { var song = JSON.parse(body) }
             catch (err) { return respond(400, err) }
@@ -71,6 +76,8 @@ var server = http.createServer(function (req, res) {
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
         var s = tr.createWriteStream('#code');
+        var title = encode(parts.join('/'));
+        tr.select('#save *[name=title]').setAttribute('value', title);
         readStream('index.html').pipe(tr).pipe(res);
         
         getSong(parts, params, function (err, song) {
