@@ -8,8 +8,15 @@ ascope.appendTo('#ascope');
 var fscope = require('frequency-viewer')();
 fscope.appendTo('#fscope');
 
+var play = document.querySelector('#play');
+play.addEventListener('click', togglePlay);
+ascope.on('click', togglePlay);
+
 var paused = false;
-ascope.on('click', function () { paused = !paused });
+function togglePlay () {
+    paused = !paused;
+    this.textContent = paused ? 'play' : 'pause';
+}
 
 window.addEventListener('resize', function (ev) {
     ascope.resize();
@@ -17,7 +24,6 @@ window.addEventListener('resize', function (ev) {
 });
 
 var code = document.querySelector('#code');
-
 observable.input(code)(function (source) {
     try { music = Function(source)() }
     catch (err) { return console.log(err) }
