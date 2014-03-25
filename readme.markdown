@@ -6,6 +6,18 @@ design musical algorithms
 
 ![screenshot](images/screenshot.png)
 
+# usage
+
+```
+code-music-studio
+
+  Run the code-music-studio http server.
+
+  -p PORT
+  -d DATADIR
+
+```
+
 # install
 
 With [npm](https://npmjs.org) do:

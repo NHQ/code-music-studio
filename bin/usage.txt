@@ -1,0 +1,7 @@
+code-music-studio
+
+  Run the code-music-studio http server.
+
+  -p PORT
+  -d DATADIR
+

@@ -14,6 +14,11 @@ var argv = minimist(process.argv.slice(2), {
     alias: { p: 'port', d: 'datadir' },
     default: { datadir: '.' }
 });
+if (argv.h || argv.help) {
+    fs.createReadStream(__dirname + '/usage.txt').pipe(process.stdout);
+    return;
+}
+
 var port = parseInt(process.env.PORT) || argv.port
     || parseInt(argv._[0]) || 8000
 ;
