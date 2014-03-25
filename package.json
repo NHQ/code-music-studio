@@ -1,6 +1,6 @@
 {
   "name": "code-music-studio",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "design musical algorithms",
   "bin": {
     "code-music-studio": "bin/cmd.js"
@@ -14,7 +14,7 @@
     "frequency-viewer": "~0.0.0",
     "hyperquest": "^0.3.0",
     "hyperspace": "^0.9.2",
-    "level-party": "^0.0.3",
+    "level": "^0.18.0",
     "marked": "^0.3.2",
     "minimist": "~0.0.8",
     "observable": "~2.1.3",
