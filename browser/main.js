@@ -15,7 +15,7 @@ function onsubmit (ev) {
     });
     r.end(JSON.stringify({ title: title, code: code.value }));
     if (window.history.pushState) {
-        window.history.pushState({}, title, '/' + encodeURIComponent(title));
+        window.history.pushState({}, title, '/' + title);
     }
     document.querySelector('.history-link').setAttribute(
         'href', '/-/history/' + encodeURIComponent(title)
