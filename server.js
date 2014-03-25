@@ -26,6 +26,7 @@ var datadir = path.join(
 var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 var getSong = require('./lib/song.js')(db);
 var getHistory = require('./lib/history.js')(db);
+var getRecent = require('./lib/recent.js')(db);
 var render = { history: require('./render/history.js') };
 
 var server = http.createServer(function (req, res) {
@@ -36,11 +37,15 @@ var server = http.createServer(function (req, res) {
     
     if (m === 'POST' && /\.json$/.test(u.pathname)) {
         parts[parts.length-1] = parts[parts.length-1].replace(/\.json$/, '');
-        var key = [ 'songs', parts, Date.now() ];
+        var key = [ 'song', parts, Date.now() ];
         req.pipe(concat(function (body) {
             try { var song = JSON.parse(body) }
             catch (err) { return respond(400, err) }
-            db.put(key, song, function (err) {
+            var rows = [
+                { type: 'put', key: key, value: song },
+                { type: 'put', key: [ 'song-time', key[2], parts ], value: 0 }
+            ];
+            db.batch(rows, function (err) {
                 if (err) respond(500, err)
                 else res.end('ok\n');
             });
@@ -69,6 +74,12 @@ var server = http.createServer(function (req, res) {
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history') {
         var first = true;
         getHistory(parts.slice(2)).pipe(render.history()).pipe(res);
+    }
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent.json') {
+        var write = function (row) {
+            this.queue(JSON.stringify(row) + '\n');
+        };
+        getRecent().pipe(through(write)).pipe(res);
     }
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
