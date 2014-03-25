@@ -282,3 +282,11 @@ function pluck (t, freq, duration, steps) {
     return scalar * sum / 6;
 }
 ```
+
+Here are some more:
+
+* [callaback](http://studio.substack.net/callaback)
+* [clown](http://studio.substack.net/clown)
+* [chirp](http://studio.substack.net/chirp)
+* [ringer](http://studio.substack.net/ringer)
+* [beep-boop](http://studio.substack.net/beep-boop)

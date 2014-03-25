@@ -8,6 +8,7 @@ var trumpet = require('trumpet');
 var concat = require('concat-stream');
 var through = require('through');
 var qs = require('querystring');
+var marked = require('marked');
 
 var argv = minimist(process.argv.slice(2), {
     alias: { p: 'port', d: 'datadir' },
@@ -92,6 +93,14 @@ var server = http.createServer(function (req, res) {
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent') {
         getRecent().pipe(render.recent()).pipe(res);
+    }
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'help') {
+        fs.readFile(__dirname + '/../doc/index.markdown', 'utf8',
+        function (err, src) {
+            if (err) return respond(500, err);
+            res.setHeader('content-type', 'text/html');
+            res.end(marked(src));
+        });
     }
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
