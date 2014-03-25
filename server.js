@@ -27,7 +27,10 @@ var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 var getSong = require('./lib/song.js')(db);
 var getHistory = require('./lib/history.js')(db);
 var getRecent = require('./lib/recent.js')(db);
-var render = { history: require('./render/history.js') };
+var render = {
+    history: require('./render/history.js'),
+    recent: require('./render/recent.js')
+};
 
 var server = http.createServer(function (req, res) {
     var u = url.parse(req.url), m = req.method;
@@ -80,6 +83,9 @@ var server = http.createServer(function (req, res) {
             this.queue(JSON.stringify(row) + '\n');
         };
         getRecent().pipe(through(write)).pipe(res);
+    }
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent') {
+        getRecent().pipe(render.recent()).pipe(res);
     }
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
