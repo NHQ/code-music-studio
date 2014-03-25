@@ -6,6 +6,7 @@ var path = require('path');
 var minimist = require('minimist');
 var trumpet = require('trumpet');
 var concat = require('concat-stream');
+var through = require('through');
 var qs = require('querystring');
 var encode = require('ent').encode;
 
@@ -23,31 +24,8 @@ var datadir = path.join(
     'code-music-studio.db'
 );
 var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
-
-function getSong (parts, params, cb) {
-    var key = [ 'songs', parts ];
-    if (params.time) {
-        key.push(parseInt(params.time,10));
-        return db.get(key, function (err, song) {
-            if (err) cb(err)
-            else cb(null, song)
-        });
-    }
-    var s = db.createReadStream({
-        start: key.concat(undefined),
-        end: key.concat(null),
-        limit: 1,
-        reverse: true
-    });
-    var found = false;
-    s.on('data', function (row) {
-        found = true;
-        cb(null, row.value);
-    });
-    s.on('end', function () {
-        if (!found) cb('not found');
-    });
-}
+var getSong = require('./lib/song.js')(db);
+var getHistory = require('./lib/history.js')(db);
 
 var server = http.createServer(function (req, res) {
     var u = url.parse(req.url), m = req.method;
@@ -76,6 +54,16 @@ var server = http.createServer(function (req, res) {
             if (err) respond(500, '// ' + err)
             else res.end(song.code)
         });
+    }
+    else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history') {
+        getHistory(parts.slice(2))
+            .pipe(through(function (row) {
+                var rec = row.value;
+                rec.time = row.key[2];
+                this.queue(JSON.stringify(rec) + '\n');
+            }))
+            .pipe(res)
+        ;
     }
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
