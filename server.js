@@ -20,14 +20,37 @@ var bytewise = require('bytewise');
 var datadir = path.join(process.env.DATADIR || argv.datadir, 'code.db');
 var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 
+function getSong (parts, params, cb) {
+    var key = [ 'songs', parts ];
+    if (params.time) {
+        key.push(parseInt(params.time,10));
+        return db.get(key, function (err, song) {
+            if (err) cb(err)
+            else cb(null, song)
+        });
+    }
+    var opts = { start: key, end: key.concat(null) };
+    var s = db.createReadStream(key, { limit: 1, reverse: true });
+    var found = false;
+    s.on('data', function (row) {
+        found = true;
+        cb(null, row.value);
+    });
+    s.on('end', function () {
+        if (!found) cb('not found');
+    });
+}
+
 var server = http.createServer(function (req, res) {
     var u = url.parse(req.url), m = req.method;
-    var parts = u.pathname.split('/').slice(1);
+    try { var parts = decodeURIComponent(u.pathname).split('/').slice(1) }
+    catch (err) { return respond(400, err) }
     var params = qs.parse(u.query);
     
     if (m === 'POST' && /\.json$/.test(u.pathname)) {
+        parts[parts.length-1] = parts[parts.length-1].replace(/\.json$/, '');
         var key = [ 'songs', parts, Date.now() ];
-        res.pipe(concat(function (body) {
+        req.pipe(concat(function (body) {
             try { var song = JSON.parse(body) }
             catch (err) { return respond(400, err) }
             db.put(key, song, function (err) {
@@ -40,34 +63,19 @@ var server = http.createServer(function (req, res) {
         ecstatic(req, res);
     }
     else if (m === 'GET' && parts[0] !== '-' && /\.js$/.test(u.pathname)) {
-        var key = [ 'songs', parts ];
-        if (params.time) {
-            key.push(parseInt(params.time,10));
-            return db.get(key, function (err, song) {
-                if (err) respond(err)
-                else res.end(song.code);
-            });
-        }
-        var opts = { start: key, end: key.concat(null) };
-        var s = db.createReadStream(key, { limit: 1, reverse: true });
-        var found = false;
-        s.on('data', function (row) {
-            found = true;
-            res.end(row.code);
-        });
-        s.on('end', function () {
-            if (!found) respond(200, '// not found');
+        getSong(parts, params, function (err, song) {
+            if (err) respond(500, '// ' + err)
+            else res.end(song.code)
         });
     }
-    else if (m === 'GET' && parts[0] !== '-' && !/\.\w+$/.test(u.pathname)) {
-        var key = [ 'songs', parts ];
+    else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
         var s = tr.createWriteStream('#code');
         readStream('index.html').pipe(tr).pipe(res);
         
-        db.get(key, function (err, song) {
+        getSong(parts, params, function (err, song) {
             if (err) {
-                s.write('// no such song\n');
+                s.write('// ' + err + '\n');
                 s.end('return function (t) {\n  return 0\n}');
             }
             else s.end(song.code);
@@ -86,5 +94,5 @@ var server = http.createServer(function (req, res) {
 server.listen(port);
 
 function readStream (file) {
-    return fs.createReadStream(path.join(__dirname, file));
+    return fs.createReadStream(path.join(__dirname, 'static', file));
 }

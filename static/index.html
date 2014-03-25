@@ -52,7 +52,10 @@
         padding-left: 5px;
         padding-top: 2px;
       }
-      #tabs button {
+      #tabs form {
+        display: inline-block;
+      }
+      #tabs button, #tabs input[type="submit"] {
         background-color: rgb(192,128,0);
         color: white;
         border-color: white;
@@ -61,7 +64,7 @@
         min-width: 60px;
         cursor: pointer;
       }
-      #tabs button:hover {
+      #tabs button:hover, #tabs input[type="submit"] {
         background-color: rgb(230,160,0);
       }
       #tabs #play {
@@ -84,8 +87,10 @@
 }
 </textarea>
     <div id="tabs">
-      <input id="title" type="text" placeholder="title">
-      <button>save</button>
+      <form id="save">
+        <input name="title" type="text" placeholder="title">
+        <input type="submit" value="save">
+      </form>
       <button>history</button>
       <button>browse</button>
       

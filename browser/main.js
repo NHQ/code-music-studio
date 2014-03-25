@@ -1,5 +1,21 @@
 var baudio = require('webaudio');
 var observable = require('observable');
+var hyperquest = require('hyperquest');
+
+console.log(document.querySelector('#save'));
+document.querySelector('#save').addEventListener('submit', onsubmit);
+function onsubmit (ev) {
+    ev.preventDefault();
+    var title = this.elements.title.value;
+    var href = location.protocol + '//' + location.host + '/'
+        + encodeURIComponent(title) + '.json'
+    ;
+    var r = hyperquest.post(href);
+    r.on('data', function (buf) {
+        console.log(buf);
+    });
+    r.end(JSON.stringify({ title: title, code: code.value }));
+}
 
 var music = function (t) { return 0 };
 var ascope = require('amplitude-viewer')();
