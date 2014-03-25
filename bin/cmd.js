@@ -8,7 +8,6 @@ var trumpet = require('trumpet');
 var concat = require('concat-stream');
 var through = require('through');
 var qs = require('querystring');
-var encode = require('ent').encode;
 
 var argv = minimist(process.argv.slice(2), {
     alias: { p: 'port', d: 'datadir' },
@@ -97,7 +96,7 @@ var server = http.createServer(function (req, res) {
     else if (m === 'GET' && parts[0] !== '-') {
         var tr = trumpet();
         var s = tr.createWriteStream('#code');
-        var title = encode(parts.join('/'));
+        var title = parts.join('/');
         tr.select('#save *[name=title]').setAttribute('value', title);
         var href = encodeURIComponent(title);
         tr.select('.history-link').setAttribute('href', '/-/history/' + href);
