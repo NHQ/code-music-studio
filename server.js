@@ -8,7 +8,6 @@ var trumpet = require('trumpet');
 var concat = require('concat-stream');
 var qs = require('querystring');
 var encode = require('ent').encode;
-var lexi = require('lexicographic-integer');
 
 var argv = minimist(process.argv.slice(2), {
     alias: { p: 'port', d: 'datadir' },
@@ -28,14 +27,18 @@ var db = level(datadir, { keyEncoding: bytewise, valueEncoding: 'json' });
 function getSong (parts, params, cb) {
     var key = [ 'songs', parts ];
     if (params.time) {
-        key.push(lexi.pack(parseInt(params.time,10)));
+        key.push(parseInt(params.time,10));
         return db.get(key, function (err, song) {
             if (err) cb(err)
             else cb(null, song)
         });
     }
-    var opts = { start: key, end: key.concat(null) };
-    var s = db.createReadStream(key, { limit: 1, reverse: true });
+    var s = db.createReadStream({
+        start: key.concat(undefined),
+        end: key.concat(null),
+        limit: 1,
+        reverse: true
+    });
     var found = false;
     s.on('data', function (row) {
         found = true;
@@ -54,7 +57,7 @@ var server = http.createServer(function (req, res) {
     
     if (m === 'POST' && /\.json$/.test(u.pathname)) {
         parts[parts.length-1] = parts[parts.length-1].replace(/\.json$/, '');
-        var key = [ 'songs', parts, lexi.pack(Date.now()) ];
+        var key = [ 'songs', parts, Date.now() ];
         req.pipe(concat(function (body) {
             try { var song = JSON.parse(body) }
             catch (err) { return respond(400, err) }
@@ -68,6 +71,7 @@ var server = http.createServer(function (req, res) {
         ecstatic(req, res);
     }
     else if (m === 'GET' && parts[0] !== '-' && /\.js$/.test(u.pathname)) {
+        parts[parts.length-1] = parts[parts.length-1].replace(/\.js$/, '');
         getSong(parts, params, function (err, song) {
             if (err) respond(500, '// ' + err)
             else res.end(song.code)
