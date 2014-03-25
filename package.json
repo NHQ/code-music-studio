@@ -16,9 +16,10 @@
     "browserify": "*"
   },
   "scripts": {
+    "start": "node server.js",
     "test": "tape test/*.js",
     "build": "browserify main.js -o bundle.js",
-    "watch": "watchify main.js -o bundle.js",
+    "watch": "watchify main.js -o bundle.js -dv",
     "prepublish": "npm run build"
   },
   "repository": {
