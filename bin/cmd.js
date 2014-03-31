@@ -67,11 +67,15 @@ var server = http.createServer(function (req, res) {
     else if (m === 'GET' && parts[0] !== '-' && /\.js$/.test(u.pathname)) {
         parts[parts.length-1] = parts[parts.length-1].replace(/\.js$/, '');
         getSong(parts, params, function (err, song) {
-            if (err) respond(500, '// ' + err)
-            else res.end(song.code)
+            if (err) return respond(500, '// ' + err)
+            allowOrigin(res);
+            res.setHeader('content-type', 'text/javascript');
+            res.end(song.code)
         });
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'history.json') {
+        allowOrigin(res);
+        res.setHeader('content-type', 'application/json');
         getHistory(parts.slice(2))
             .pipe(through(function (row) {
                 var rec = row.value;
@@ -89,6 +93,8 @@ var server = http.createServer(function (req, res) {
         var write = function (row) {
             this.queue(JSON.stringify(row) + '\n');
         };
+        allowOrigin(res);
+        res.setHeader('content-type', 'application/json');
         getRecent(params).pipe(through(write)).pipe(res);
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent') {
@@ -136,4 +142,8 @@ server.on('listening', function () {
 
 function readStream (file) {
     return fs.createReadStream(path.join(__dirname, '../static', file));
+}
+
+function allowOrigin (res) {
+    res.setHeader('access-control-allow-origin', '*');
 }
