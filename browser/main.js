@@ -54,6 +54,18 @@ window.addEventListener('keydown', function (ev) {
 });
 
 var code = document.querySelector('#code');
+code.addEventListener('keydown', function (ev) {
+    var name = keycode(ev);
+    if (name === 'page up') {
+        var x = code.scrollTop - code.offsetHeight;
+        code.scrollTop = Math.max(0, x);
+    }
+    else if (name === 'page down') {
+        var x = code.scrollTop + code.offsetHeight;
+        code.scrollTop = Math.min(code.scrollHeight, x);
+    }
+});
+
 observable.input(code)(function (source) {
     try { music = Function(source)() }
     catch (err) { return console.log(err) }
