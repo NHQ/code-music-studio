@@ -1,6 +1,7 @@
 var baudio = require('webaudio');
 var observable = require('observable');
 var hyperquest = require('hyperquest');
+var keycode = require('keycode');
 
 document.querySelector('#save').addEventListener('submit', onsubmit);
 function onsubmit (ev) {
@@ -42,6 +43,14 @@ function togglePlay () {
 window.addEventListener('resize', function (ev) {
     ascope.resize();
     fscope.resize();
+});
+
+window.addEventListener('keydown', function (ev) {
+    var name = keycode(ev);
+    if (name === 'page up' || name === 'page down') {
+        ev.preventDefault();
+    }
+    document.body.scrollTop = 0;
 });
 
 var code = document.querySelector('#code');
