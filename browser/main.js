@@ -27,7 +27,20 @@ var music = function (t) { return 0 };
 var ascope = require('amplitude-viewer')();
 ascope.appendTo('#ascope');
 
-var fscope = require('frequency-viewer')();
+var work = require('webworkify');
+var w = work(require('./fft.js'));
+var queue = [];
+w.addEventListener('message', function (ev) {
+    var cb = queue.shift();
+    cb(ev.data);
+});
+
+var fscope = require('frequency-viewer')({
+    worker: function (data, cb) {
+        queue.push(cb);
+        w.postMessage(data);
+    }
+});
 fscope.appendTo('#fscope');
 
 var play = document.querySelector('#play');
