@@ -11,7 +11,7 @@
     "concat-stream": "~1.4.4",
     "ecstatic": "^0.4.13",
     "ent": "^0.1.0",
-    "frequency-viewer": "~0.0.0",
+    "frequency-viewer": "~0.1.0",
     "hyperquest": "^0.3.0",
     "hyperspace": "^0.9.2",
     "keycode": "^0.3.0",

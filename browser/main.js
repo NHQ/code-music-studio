@@ -31,8 +31,7 @@ var work = require('webworkify');
 var w = work(require('./fft.js'));
 var queue = [];
 w.addEventListener('message', function (ev) {
-    var cb = queue.shift();
-    cb(ev.data);
+    queue.shift()(ev.data);
 });
 
 var fscope = require('frequency-viewer')({
