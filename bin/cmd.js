@@ -80,7 +80,7 @@ var server = http.createServer(function (req, res) {
             .pipe(through(function (row, enc, next) {
                 var rec = row.value;
                 rec.time = row.key[2];
-                this.queue(JSON.stringify(rec) + '\n');
+                this.push(JSON.stringify(rec) + '\n');
                 next();
             }))
             .pipe(res)
@@ -92,7 +92,7 @@ var server = http.createServer(function (req, res) {
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent.json') {
         var write = function (row, enc, next) {
-            this.queue(JSON.stringify(row) + '\n');
+            this.push(JSON.stringify(row) + '\n');
             next();
         };
         allowOrigin(res);
