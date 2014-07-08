@@ -6,12 +6,12 @@ var path = require('path');
 var minimist = require('minimist');
 var trumpet = require('trumpet');
 var concat = require('concat-stream');
-var through = require('through');
+var through = require('through2');
 var qs = require('querystring');
 var marked = require('marked');
 
 var argv = minimist(process.argv.slice(2), {
-    alias: { p: 'port', d: 'datadir' },
+    alias: { p: 'port', d: 'datadir', i: 'input' },
     default: { datadir: '.' }
 });
 if (argv.h || argv.help) {
@@ -77,10 +77,11 @@ var server = http.createServer(function (req, res) {
         allowOrigin(res);
         res.setHeader('content-type', 'application/json');
         getHistory(parts.slice(2))
-            .pipe(through(function (row) {
+            .pipe(through(function (row, enc, next) {
                 var rec = row.value;
                 rec.time = row.key[2];
                 this.queue(JSON.stringify(rec) + '\n');
+                next();
             }))
             .pipe(res)
         ;
@@ -90,8 +91,9 @@ var server = http.createServer(function (req, res) {
         getHistory(parts.slice(2)).pipe(render.history()).pipe(res);
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent.json') {
-        var write = function (row) {
+        var write = function (row, enc, next) {
             this.queue(JSON.stringify(row) + '\n');
+            next();
         };
         allowOrigin(res);
         res.setHeader('content-type', 'application/json');
@@ -139,6 +141,33 @@ server.listen(port);
 server.on('listening', function () {
     console.log('listening on http://localhost:' + server.address().port);
 });
+
+var shoe = require('shoe');
+var split = require('split');
+var state = argv.state || {};
+
+if (argv.input) {
+    var input = argv.input === '-'
+        ? process.stdin
+        : fs.createReadStream(argv.input)
+    ;
+    var setter = through(function (line, enc, next) {
+        try { var row = JSON.parse(line) }
+        catch (err) { return }
+        if (!row || typeof row !== 'object') return;
+        Object.keys(row).forEach(function (key) {
+            state[key] = row[key];
+        });
+        next();
+    });
+    input.pipe(split()).pipe(setter);
+    
+    var sock = shoe(function (stream) {
+        input.pipe(stream);
+        stream.write(JSON.stringify(state) + '\n');
+    });
+    sock.install(server, '/sock');
+}
 
 function readStream (file) {
     return fs.createReadStream(path.join(__dirname, '../static', file));

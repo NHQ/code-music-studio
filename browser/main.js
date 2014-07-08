@@ -78,16 +78,35 @@ code.addEventListener('keydown', function (ev) {
     }
 });
 
+var state = {};
+var shoe = require('shoe');
+var stream = shoe('/sock');
+
+var split = require('split');
+var through = require('through');
+
+stream.pipe(split()).pipe(through(function (line) {
+    try { var row = JSON.parse(line) }
+    catch (err) { return }
+    if (!row || typeof row !== 'object') return;
+    
+    var keys = Object.keys(row);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i]
+        state[key] = row[key];
+    }
+}));
+
 observable.input(code)(function (source) {
     try { music = Function(source)() }
     catch (err) { return console.log(err) }
-    ascope.draw(music);
+    ascope.draw(function (t) { return music(t, state) });
 });
 
 setInterval(function f () {
     if (paused) return;
     ascope.setTime(time);
-    ascope.draw(music);
+    ascope.draw(function (t) { return music(t, state) });
     fscope.draw(data);
 }, 50);
 
@@ -98,7 +117,7 @@ var dataIx = 0;
 var b = baudio(function (t) {
     time = t;
     if (paused) return 0;
-    var x = music(t);
+    var x = music(t, state);
     data[dataIx++ % data.length] = x;
     return x;
 });
