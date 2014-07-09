@@ -97,7 +97,7 @@ var server = http.createServer(function (req, res) {
         };
         allowOrigin(res);
         res.setHeader('content-type', 'application/json');
-        getRecent(params).pipe(through(write)).pipe(res);
+        getRecent(params).pipe(through.obj(write)).pipe(res);
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent') {
         getRecent(params).pipe(render.recent()).pipe(res);
