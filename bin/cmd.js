@@ -11,7 +11,7 @@ var qs = require('querystring');
 var marked = require('marked');
 
 var argv = minimist(process.argv.slice(2), {
-    alias: { p: 'port', d: 'datadir', i: 'input' },
+    alias: { p: 'port', d: 'datadir', i: 'input', q: 'quiet' },
     default: { datadir: '.' }
 });
 if (argv.h || argv.help) {
@@ -143,14 +143,12 @@ server.on('listening', function () {
 });
 
 var shoe = require('shoe');
+var net = require('net');
 var split = require('split');
 var state = argv.state || {};
 
 if (argv.input) {
-    var input = argv.input === '-'
-        ? process.stdin
-        : fs.createReadStream(argv.input)
-    ;
+    var input = process.stdin;
     var setter = through(function (line, enc, next) {
         try { var row = JSON.parse(line) }
         catch (err) { return }
