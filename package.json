@@ -23,7 +23,8 @@
     "through": "^1.0.0",
     "trumpet": "~1.6.3",
     "webaudio": "~2.0.0",
-    "shoe": "~0.0.15"
+    "shoe": "~0.0.15",
+    "webworkify": "~0.1.0"
   },
   "devDependencies": {
     "browserify": "^3.33.0",
