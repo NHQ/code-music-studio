@@ -100,7 +100,7 @@ var server = http.createServer(function (req, res) {
         getRecent(params).pipe(through.obj(write)).pipe(res);
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'recent') {
-        getRecent(params).pipe(render.recent()).pipe(res);
+        getRecent(params).pipe(render.recent(params)).pipe(res);
     }
     else if (m === 'GET' && parts[0] === '-' && parts[1] === 'help') {
         fs.readFile(__dirname + '/../doc/index.markdown', 'utf8',
