@@ -36,7 +36,7 @@
   "scripts": {
     "start": "node bin/cmd.js",
     "test": "tape test/*.js",
-    "build": "browserify browser/main.js > static/bundle.js",
+    "build": "browserify browser/main.js | uglifyjs > static/bundle.js",
     "watch": "watchify browser/main.js -o static/bundle.js -dv",
     "prepublish": "npm run build"
   },
