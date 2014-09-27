@@ -19,11 +19,12 @@
     "marked": "^0.3.2",
     "minimist": "~0.0.8",
     "observable": "~2.1.3",
+    "shoe": "~0.0.15",
     "strftime": "^0.8.0",
     "through": "^1.0.0",
+    "through2": "^0.6.2",
     "trumpet": "~1.6.3",
     "webaudio": "~2.0.0",
-    "shoe": "~0.0.15",
     "webworkify": "~0.1.0"
   },
   "devDependencies": {
