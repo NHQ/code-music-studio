@@ -3,6 +3,7 @@ var observable = require('observable');
 var hyperquest = require('hyperquest');
 var keycode = require('keycode');
 
+var $ = require('../../polysynth/cheatcode')
 document.querySelector('#save').addEventListener('submit', onsubmit);
 function onsubmit (ev) {
     ev.preventDefault();
@@ -79,6 +80,8 @@ code.addEventListener('keydown', function (ev) {
 });
 
 var state = {};
+$.state = state
+
 var shoe = require('shoe');
 var stream = shoe('/sock');
 
@@ -95,10 +98,11 @@ stream.pipe(split()).pipe(through(function (line) {
         var key = keys[i]
         state[key] = row[key];
     }
+    try { music = Function(['$', 'TIME'], code.value)($, time) }
+    catch (err) { return console.log(err) }
 }));
-
 observable.input(code)(function (source) {
-    try { music = Function(source)() }
+    try { music = Function(['$', 'TIME'], source)($, time) }
     catch (err) { return console.log(err) }
     ascope.draw(function (t) { return music(t, state) });
 });

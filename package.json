@@ -30,8 +30,9 @@
   },
   "devDependencies": {
     "browserify": "^3.33.0",
-    "watchify": "^0.6.3",
-    "uglify-js": "^2.4.13"
+    "midi": "^0.9.4",
+    "uglify-js": "^2.4.13",
+    "watchify": "^0.6.3"
   },
   "scripts": {
     "start": "node bin/cmd.js",

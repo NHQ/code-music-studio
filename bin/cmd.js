@@ -150,6 +150,7 @@ var state = argv.state || {};
 if (argv.input) {
     var input = process.stdin;
     var setter = through(function (line, enc, next) {
+        line = line.toString()
         try { var row = JSON.parse(line) }
         catch (err) { return }
         if (!row || typeof row !== 'object') return;
