@@ -146,9 +146,12 @@ var shoe = require('shoe');
 var net = require('net');
 var split = require('split');
 var state = argv.state || {};
-
+console.log(argv)
 if (argv.input) {
     var input = process.stdin;
+    input.on('data', function(d){
+      console.log(d.toString())
+    })
     var setter = through(function (line, enc, next) {
         line = line.toString()
         try { var row = JSON.parse(line) }

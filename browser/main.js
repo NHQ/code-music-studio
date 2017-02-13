@@ -98,8 +98,10 @@ stream.pipe(split()).pipe(through(function (line) {
         var key = keys[i]
         state[key] = row[key];
     }
+    state.updated = true
     try { music = Function(['$', 'TIME'], code.value)($, time) }
     catch (err) { return console.log(err) }
+    state.updated = false
 }));
 observable.input(code)(function (source) {
     try { music = Function(['$', 'TIME'], source)($, time) }
